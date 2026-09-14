@@ -5,6 +5,8 @@ const { port } = require("./src/configs/env.config");
 const sequelize = require("./src/configs/db.config");
 const errorHandlerMiddleware = require("./src/middlewares/errorHandler.middleware");
 
+require("./src/models");
+
 const app = express();
 
 PORT = 3000;
@@ -13,7 +15,6 @@ app.use(express.json());
 app.use(responeMiddlware);
 
 app.use("/api", router)
-
 
 app.use(errorHandlerMiddleware);
 
