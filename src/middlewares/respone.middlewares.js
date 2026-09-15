@@ -1,5 +1,5 @@
 const responeMiddlware = (req, res, next) => {
-    res.success = ( message, data = null, statusCode = 200 ) => {
+    res.success = ( data = null, message = "Thành công", statusCode = 200 ) => {
         return res.status(statusCode).json({
             success: true,
             message,

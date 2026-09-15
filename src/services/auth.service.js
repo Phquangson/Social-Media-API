@@ -3,58 +3,53 @@ const { hashPassword, comparePassword } = require("../utils/hash.utils");
 const { generateAccessToken, verifyAccessToken } = require("../utils/jwt.utils");
 
 class AuthService {
-    async register( {username ,email, password} ) {
-        const existingUser = await User.findOne({
-            where: { email }
-        })
+    async register({ username, email, password }) {
+        const existingUser = await User.findOne({ where: { email } });
 
-        if ( existingUser ) {
-            const error = new Error("Email đã được sử dụng")
-            error.errorCode = "E-RES"
-            error.statusCode = 409
-            throw error
+        if (existingUser) {
+            const error = new Error("Email đã được sử dụng");
+            error.errorCode = "E-RES";
+            error.statusCode = 409;
+            throw error;
         }
 
-        const hashedPassword = await hashPassword(password)
+        const hashedPassword = await hashPassword(password);
 
         const newUser = await User.create({
-            username,
+            username: username.trim(),
             email,
             password: hashedPassword
-        })
+        });
 
-        const returnedUser = {
+        return {
             id: newUser.id,
             email: newUser.email,
             username: newUser.username,
         };
+    }
 
-        return returnedUser
-    };
+    async login(email, password) {
+        const user = await User.findOne({ where: { email } });
 
-    async login ( email, password ) {
-        const user = await User.findOne({ where: {email} })
-
-        if(!user) {
-            const error = new Error("Email hoặc mật khẩu không đúng")
-            error.statusCode = 401
-            throw error
-        }
-
-        const isMatch = await comparePassword ( password, user.password )
-
-        if(!isMatch) {
+        if (!user) {
             const error = new Error("Email hoặc mật khẩu không đúng");
             error.statusCode = 401;
+            error.errorCode = "E-AUTH";
             throw error;
         }
 
-        const payload = { sub: user.id, email: user.email, username: user.username, avatar: user.avatar || "Avatar mặc định" }
+        const isMatch = await comparePassword(password, user.password);
 
-        const accessToken = generateAccessToken(payload)
+        if (!isMatch) {
+            const error = new Error("Email hoặc mật khẩu không đúng");
+            error.statusCode = 401;
+            error.errorCode = "E-AUTH";
+            throw error;
+        }
 
-        return accessToken;
+        const payload = { sub: user.id, email: user.email, username: user.username, avatar: user.avatar || "Avatar mặc định" };
 
+        return generateAccessToken(payload);
     }
 }
 

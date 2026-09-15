@@ -11,12 +11,12 @@ const User = sequelize.define(
         },
         username: {
             type: DataTypes.STRING(255),
-            allowNull: false, // Bắt buộc có giá trị
+            allowNull: false, 
         },
         email: {
             type: DataTypes.STRING(255),
             allowNull: false,
-            unique: true // Không được phép trùng
+            unique: true 
         },
         password: {
             type: DataTypes.STRING(255),
